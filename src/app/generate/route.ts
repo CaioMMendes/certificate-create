@@ -5,7 +5,8 @@ import fs from "fs";
 import path from "path";
 import { NextResponse } from "next/server";
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(request: Request, response: Response) {
+  const req = await request.json();
   const certificatePath = path.join(
     process.cwd(),
     "public/assets/viseg_certificateWhite.pdf"
@@ -33,14 +34,14 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
 
   //escrevendo o restante
   // Draw a string of text diagonally across the first page
-  certificatePage[0].drawText("Caio M. M. Rodrigues", {
+  certificatePage[0].drawText(req.name, {
     x: 100,
     y: height / 2,
     size: 40,
     font: timesNewRomanItalicFont,
     color: rgb(0, 0, 0),
   });
-  certificatePage[0].drawText("Caio M. M. Rodrigues", {
+  certificatePage[0].drawText(req.name, {
     x: 100,
     y: height / 2 - 185,
     size: 20,
@@ -50,7 +51,7 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
   // Salve o PDF gerado
   const pdfBytes = await certificateDoc.save();
   console.log(pdfBytes);
-  fs.writeFile("fileName.pdf", pdfBytes, (err) => {
+  fs.writeFile(`./public/assets/${req.name}.pdf`, pdfBytes, (err) => {
     if (err) {
       console.error("Erro ao gravar o arquivo:", err);
     } else {
